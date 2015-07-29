@@ -50,6 +50,12 @@ class ChatClientHandler extends Thread{
 		else if(commands[0].equalsIgnoreCase("users")){
 		    users();
 		}
+
+		/*TELLコマンド*/
+		else if(commands[0].equalsIgnoreCase("tell")){
+		    tell(commands[1],commands[2]);
+		}
+
 		/*空文を入力した場合は接続を閉じる*/
 		if(message.equals("")){
 		    break;
@@ -131,6 +137,41 @@ class ChatClientHandler extends Thread{
 	    returnMessage = returnMessage + names.get(i) + ",";
 	}
 	this.send(returnMessage);
+    }
+
+    public void tell(String tName, String message) throws IOException{//指定の相手のみにメッセージを送る
+	/*他のクライアントを一覧にし、その名前を確認する*/
+	List names = new ArrayList();
+	int count = 0;
+	for(int i=0; i<clients.size(); i++){
+	    ChatClientHandler handler = (ChatClientHandler)clients.get(i);
+	    if(handler != this){
+		names.add(handler.getClientsName());
+		if(tName.equals(names.get(names.size() - 1))){
+		    handler.send("["+ this.name +" -> "+ tName +"]"+ message);
+		    break;
+		}
+		count++;
+	    }
+	}
+	if(count>=names.size()){//もし指定した相手がいなかったら
+	    String returnMessage = tName + " does'nt exit";
+	    this.send(returnMessage);
+	    return;
+	}
+	Collections.sort(names);
+	for(int i=0; i < names.size(); i++){
+	    if(tName.equals(names.get(i))){
+		/*自分側に送った相手の名前を表示する*/
+		String returnMessage = tName;
+		this.send(returnMessage);
+		return;
+	    }
+	}
+	/*ループ内で見つからなかった(=受け取った相手がいなかった)場合*/
+	String returnMessage = "no one receive message";
+	this.send(returnMessage);
+	return;
     }
 
     /*通常のメソッド*/
