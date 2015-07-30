@@ -98,7 +98,7 @@ class ChatClientHandler extends Thread{
     }
 
     public void help() throws IOException{//コマンドの一覧を表示する
-	send("help, name, whoami, users, bye, post");
+	send("help, name, whoami, users, bye, post, tell");
     }
 
     public void whoami() throws IOException{//このクライアントの名前を表示
